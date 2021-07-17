@@ -2,7 +2,6 @@ package actions
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/getfider/fider/app/models/dto"
 	"github.com/getfider/fider/app/models/entity"
@@ -35,19 +34,19 @@ func (action *UpdateUserSettings) Validate(ctx context.Context, user *entity.Use
 	result := validate.Success()
 
 	if action.Name == "" {
-		result.AddFieldFailure("name", "Name is required.")
+		result.AddFieldFailure("name", propertyIsRequired(ctx, "name"))
 	}
 
 	if action.AvatarType < 1 || action.AvatarType > 3 {
-		result.AddFieldFailure("avatarType", "Invalid avatar type.")
+		result.AddFieldFailure("avatarType", propertyIsInvalid(ctx, "avatarType"))
 	}
 
 	if len(action.Name) > 50 {
-		result.AddFieldFailure("name", "Name must have less than 50 characters.")
+		result.AddFieldFailure("name", propertyMaxStringLen(ctx, "name", 50))
 	}
 
 	action.Avatar.BlobKey = user.AvatarBlobKey
-	messages, err := validate.ImageUpload(action.Avatar, validate.ImageUploadOpts{
+	messages, err := validate.ImageUpload(ctx, action.Avatar, validate.ImageUploadOpts{
 		IsRequired:   action.AvatarType == enum.AvatarTypeCustom,
 		MinHeight:    50,
 		MinWidth:     50,
@@ -66,12 +65,12 @@ func (action *UpdateUserSettings) Validate(ctx context.Context, user *entity.Use
 				if e.UserSettingsKeyName == k {
 					ok = true
 					if !e.Validate(v) {
-						result.AddFieldFailure("settings", fmt.Sprintf("Settings %s has an invalid value %s.", k, v))
+						result.AddFieldFailure("settings", i18n.T(ctx, "validation.invalidvalue", i18n.Params{"name": k}, i18n.Params{"value": v}))
 					}
 				}
 			}
 			if !ok {
-				result.AddFieldFailure("settings", i18n.T(ctx, "validation.settings.unknown", i18n.Params{"name": k}))
+				result.AddFieldFailure("settings", i18n.T(ctx, "validation.custom.unknownsettings", i18n.Params{"name": k}))
 			}
 		}
 	}

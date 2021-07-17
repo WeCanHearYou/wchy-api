@@ -63,7 +63,7 @@ func (action *CreateEditOAuthConfig) Validate(ctx context.Context, user *entity.
 		action.Provider = "_" + strings.ToLower(rand.String(10))
 	}
 
-	messages, err := validate.ImageUpload(action.Logo, validate.ImageUploadOpts{
+	messages, err := validate.ImageUpload(ctx, action.Logo, validate.ImageUploadOpts{
 		IsRequired:   false,
 		MinHeight:    24,
 		MinWidth:     24,
@@ -106,18 +106,18 @@ func (action *CreateEditOAuthConfig) Validate(ctx context.Context, user *entity.
 
 	if action.AuthorizeURL == "" {
 		result.AddFieldFailure("authorizeURL", "Authorize URL is required.")
-	} else if messages := validate.URL(action.AuthorizeURL); len(messages) > 0 {
+	} else if messages := validate.URL(ctx, action.AuthorizeURL); len(messages) > 0 {
 		result.AddFieldFailure("authorizeURL", messages...)
 	}
 
 	if action.TokenURL == "" {
 		result.AddFieldFailure("tokenURL", "Token URL is required.")
-	} else if messages := validate.URL(action.TokenURL); len(messages) > 0 {
+	} else if messages := validate.URL(ctx, action.TokenURL); len(messages) > 0 {
 		result.AddFieldFailure("tokenURL", messages...)
 	}
 
 	if action.ProfileURL != "" {
-		if messages := validate.URL(action.ProfileURL); len(messages) > 0 {
+		if messages := validate.URL(ctx, action.ProfileURL); len(messages) > 0 {
 			result.AddFieldFailure("profileURL", messages...)
 		}
 	}

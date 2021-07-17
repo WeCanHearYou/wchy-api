@@ -4,6 +4,7 @@ import { Input, ShowPostStatus } from "@fider/components"
 import { actions } from "@fider/services"
 import { Post, PostStatus } from "@fider/models"
 import { HStack, VStack } from "@fider/components/layout"
+import { t, Trans } from "@lingui/macro"
 
 interface PostSearchProps {
   exclude?: number[]
@@ -42,13 +43,21 @@ export const PostSearch = (props: PostSearchProps) => {
 
   return (
     <>
-      <Input field="query" icon={IconSearch} placeholder="Search original post..." value={query} onChange={setQuery} />
+      <Input
+        field="query"
+        icon={IconSearch}
+        placeholder={t({ id: "showpost.postsearch.query.placeholder", message: "Search original post..." })}
+        value={query}
+        onChange={setQuery}
+      />
       <div className="grid gap-2 grid-cols-1 lg:grid-cols-3">
         {posts.map((p) => (
           <VStack onClick={selectPost(p)} className={`bg-gray-50 p-4 clickable border-2 rounded ${selectedPost === p ? "border-primary-base" : ""}`} key={p.id}>
             <HStack className="text-2xs">
               <span>#{p.number}</span> <span>&middot;</span> <ShowPostStatus status={PostStatus.Get(p.status)} /> <span>&middot;</span>{" "}
-              <span>{p.votesCount} votes</span>
+              <span>
+                <Trans id="showpost.postsearch.numofvotes">{p.votesCount} votes</Trans>
+              </span>
             </HStack>
             <span>{p.title}</span>
           </VStack>

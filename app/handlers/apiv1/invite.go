@@ -52,7 +52,7 @@ func SendInvites() web.HandlerFunc {
 		}
 
 		log.Warnf(c, "@{Tenant:magenta} sent @{TotalInvites:magenta} invites", dto.Props{
-			"Tenant": c.Tenant().Subdomain,
+			"Tenant":       c.Tenant().Subdomain,
 			"TotalInvites": len(action.Invitations),
 		})
 		c.Enqueue(tasks.SendInvites(action.Subject, action.Message, action.Invitations))

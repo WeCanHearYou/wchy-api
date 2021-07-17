@@ -1,6 +1,7 @@
 import React from "react"
 import { Modal, Checkbox } from "@fider/components"
 import { useFider } from "@fider/hooks"
+import { Trans } from "@lingui/macro"
 
 interface LegalAgreementProps {
   onChange: (agreed: boolean) => void
@@ -12,7 +13,7 @@ export const TermsOfService = () => {
   if (fider.settings.hasLegal) {
     return (
       <a href="/terms" className="text-link" target="_blank">
-        Terms of Service
+        <Trans id="legal.termsofservice">Terms of Service</Trans>
       </a>
     )
   }
@@ -25,7 +26,7 @@ export const PrivacyPolicy = () => {
   if (fider.settings.hasLegal) {
     return (
       <a href="/privacy" className="text-link" target="_blank">
-        Privacy Policy
+        <Trans id="legal.privacypolicy">Privacy Policy</Trans>
       </a>
     )
   }
@@ -38,7 +39,9 @@ export const LegalNotice = () => {
   if (fider.settings.hasLegal) {
     return (
       <p className="text-muted">
-        By signing in, you agree to the <PrivacyPolicy /> and <TermsOfService />.
+        <Trans id="legal.notice">
+          By signing in, you agree to the <PrivacyPolicy /> and <TermsOfService />.
+        </Trans>
       </p>
     )
   }
@@ -64,7 +67,9 @@ export const LegalAgreement: React.FunctionComponent<LegalAgreementProps> = (pro
   if (fider.settings.hasLegal) {
     return (
       <Checkbox field="legalAgreement" onChange={props.onChange}>
-        I have read and agree to the <PrivacyPolicy /> and <TermsOfService />.
+        <Trans id="legal.agreement">
+          I have read and agree to the <PrivacyPolicy /> and <TermsOfService />.
+        </Trans>
       </Checkbox>
     )
   }

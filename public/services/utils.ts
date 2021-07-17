@@ -34,7 +34,7 @@ export const formatDate = (locale: string, input: Date | string, format: DateFor
 
 export const timeSince = (locale: string, now: Date, date: Date): string => {
   try {
-    const seconds = (now.getTime() - date.getTime()) / 1000
+    const seconds = Math.round((now.getTime() - date.getTime()) / 1000)
     const minutes = Math.round(seconds / 60)
     const hours = Math.round(minutes / 60)
     const days = Math.round(hours / 24)

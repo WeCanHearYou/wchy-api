@@ -1,6 +1,7 @@
 package validate_test
 
 import (
+	"context"
 	"io/ioutil"
 	"testing"
 
@@ -34,7 +35,7 @@ func TestValidateImageUpload(t *testing.T) {
 				Content: img,
 			},
 		}
-		messages, err := validate.ImageUpload(upload, validate.ImageUploadOpts{
+		messages, err := validate.ImageUpload(context.Background(), upload, validate.ImageUploadOpts{
 			MinHeight:    200,
 			MinWidth:     200,
 			MaxKilobytes: 100,
@@ -60,12 +61,12 @@ func TestValidateImageUpload_ExactRatio(t *testing.T) {
 		},
 	}
 	opts.ExactRatio = true
-	messages, err := validate.ImageUpload(upload, opts)
+	messages, err := validate.ImageUpload(context.Background(), upload, opts)
 	Expect(messages).HasLen(1)
 	Expect(err).IsNil()
 
 	opts.ExactRatio = false
-	messages, err = validate.ImageUpload(upload, opts)
+	messages, err = validate.ImageUpload(context.Background(), upload, opts)
 	Expect(messages).HasLen(0)
 	Expect(err).IsNil()
 }
@@ -73,7 +74,7 @@ func TestValidateImageUpload_ExactRatio(t *testing.T) {
 func TestValidateImageUpload_Nil(t *testing.T) {
 	RegisterT(t)
 
-	messages, err := validate.ImageUpload(nil, validate.ImageUploadOpts{
+	messages, err := validate.ImageUpload(context.Background(), nil, validate.ImageUploadOpts{
 		IsRequired:   false,
 		MinHeight:    200,
 		MinWidth:     200,
@@ -83,7 +84,7 @@ func TestValidateImageUpload_Nil(t *testing.T) {
 	Expect(messages).HasLen(0)
 	Expect(err).IsNil()
 
-	messages, err = validate.ImageUpload(&dto.ImageUpload{}, validate.ImageUploadOpts{
+	messages, err = validate.ImageUpload(context.Background(), &dto.ImageUpload{}, validate.ImageUploadOpts{
 		IsRequired:   false,
 		MinHeight:    200,
 		MinWidth:     200,
@@ -110,7 +111,7 @@ func TestValidateImageUpload_Required(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		messages, err := validate.ImageUpload(testCase.upload, validate.ImageUploadOpts{
+		messages, err := validate.ImageUpload(context.Background(), testCase.upload, validate.ImageUploadOpts{
 			IsRequired:   true,
 			MinHeight:    200,
 			MinWidth:     200,
@@ -145,7 +146,7 @@ func TestValidateMultiImageUpload(t *testing.T) {
 		},
 	}
 
-	messages, err := validate.MultiImageUpload(nil, uploads, validate.MultiImageUploadOpts{
+	messages, err := validate.MultiImageUpload(context.Background(), nil, uploads, validate.MultiImageUploadOpts{
 		MaxUploads:   2,
 		MaxKilobytes: 500,
 	})
@@ -180,7 +181,7 @@ func TestValidateMultiImageUpload_Existing(t *testing.T) {
 	}
 
 	currentAttachments := []string{"attachments/file1.png", "attachments/file2.png"}
-	messages, err := validate.MultiImageUpload(currentAttachments, uploads, validate.MultiImageUploadOpts{
+	messages, err := validate.MultiImageUpload(context.Background(), currentAttachments, uploads, validate.MultiImageUploadOpts{
 		MaxUploads:   2,
 		MaxKilobytes: 500,
 	})

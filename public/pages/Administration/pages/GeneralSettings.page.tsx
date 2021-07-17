@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 
-import { Button, ButtonClickEvent, TextArea, Form, Input, ImageUploader } from "@fider/components"
+import { Button, ButtonClickEvent, TextArea, Form, Input, ImageUploader, Select } from "@fider/components"
 import { AdminPageContainer } from "../components/AdminBasePage"
 import { actions, Failure, Fider } from "@fider/services"
 import { ImageUpload } from "@fider/models"
 import { useFider } from "@fider/hooks"
-// import locales from "@locale/locales"
+import locales from "@locale/locales"
 
 const GeneralSettingsPage = () => {
   const fider = useFider()
@@ -14,7 +14,7 @@ const GeneralSettingsPage = () => {
   const [invitation, setInvitation] = useState<string>(fider.session.tenant.invitation)
   const [logo, setLogo] = useState<ImageUpload | undefined>(undefined)
   const [cname, setCNAME] = useState<string>(fider.session.tenant.cname)
-  const [locale] = useState<string>(fider.session.tenant.locale)
+  const [locale, setLocale] = useState<string>(fider.session.tenant.locale)
   const [error, setError] = useState<Failure | undefined>(undefined)
 
   const handleSave = async (e: ButtonClickEvent) => {
@@ -112,13 +112,13 @@ const GeneralSettingsPage = () => {
           </Input>
         )}
 
-        {/* <Select
+        <Select
           label="Locale"
           field="locale"
           defaultValue={locale}
           options={Object.entries(locales).map(([k, v]) => ({
             value: k,
-            label: v.text,
+            label: `${v.text} (${v.translated}%)`,
           }))}
           onChange={(o) => setLocale(o?.value || "en")}
         >
@@ -130,11 +130,12 @@ const GeneralSettingsPage = () => {
                 <a className="text-link" target="_blank" rel="noopener" href="https://crowdin.com/project/fider">
                   Crowdin
                 </a>{" "}
-                and contribute with your own translations.
+                and contribute with your own translations. No technical knowledge required.
               </p>
+              <p className="text-muted">Only public pages are translated. Internal and/or administrative pages will remain in English.</p>
             </>
           )}
-        </Select> */}
+        </Select>
 
         <div className="field">
           <Button disabled={!fider.session.user.isAdministrator} variant="primary" onClick={handleSave}>

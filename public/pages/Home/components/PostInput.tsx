@@ -4,6 +4,7 @@ import { SignInModal } from "@fider/components"
 import { cache, actions, Failure } from "@fider/services"
 import { ImageUpload } from "@fider/models"
 import { useFider } from "@fider/hooks"
+import { t } from "@lingui/macro"
 
 interface PostInputProps {
   placeholder: string
@@ -70,7 +71,13 @@ export const PostInput = (props: PostInputProps) => {
 
   const details = () => (
     <>
-      <TextArea field="description" onChange={handleDescriptionChange} value={description} minRows={5} placeholder="Describe your suggestion (optional)" />
+      <TextArea
+        field="description"
+        onChange={handleDescriptionChange}
+        value={description}
+        minRows={5}
+        placeholder={t({ id: "home.postinput.description.placeholder", message: "Describe your suggestion (optional)" })}
+      />
       <MultiImageUploader field="attachments" maxUploads={3} onChange={setAttachments} />
       <Button type="submit" variant="primary" onClick={submit}>
         Submit

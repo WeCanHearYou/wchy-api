@@ -3,6 +3,7 @@ import { Tag } from "@fider/models"
 import { Dropdown, Icon, ShowTag } from "@fider/components"
 import IconCheck from "@fider/assets/images/heroicons-check.svg"
 import { HStack } from "@fider/components/layout"
+import { plural, t, Trans } from "@lingui/macro"
 
 interface TagsFilterProps {
   tags: Tag[]
@@ -20,11 +21,18 @@ export const TagsFilter = (props: TagsFilterProps) => {
     props.selectionChanged(next)
   }
 
-  const label = selected.length === 1 ? "1 tag" : selected.length >= 2 ? `${selected.length} tags` : "Any Tag"
+  const count = selected.length
+  const label =
+    count >= 1
+      ? plural(count, {
+          one: `# tag`,
+          other: `# tags`,
+        })
+      : t({ id: "home.tagsfilter.selected.none", message: "Any tag" })
 
   return (
     <HStack>
-      <span className="text-category">with</span>
+      <Trans id="home.tagsfilter.label.with">with</Trans>
       <Dropdown renderHandle={<div className="text-medium text-xs uppercase rounded-md uppercase bg-gray-100 px-2 py-1">{label}</div>}>
         {props.tags.map((t) => (
           <Dropdown.ListItem onClick={toggle(t)} key={t.id}>

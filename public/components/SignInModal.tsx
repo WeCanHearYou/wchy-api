@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Modal, SignInControl, LegalFooter } from "@fider/components"
 import { Button } from "./common"
+import { Trans } from "@lingui/macro"
 
 interface SignInModalProps {
   isOpen: boolean
@@ -28,7 +29,9 @@ export const SignInModal: React.StatelessComponent<SignInModalProps> = (props) =
   const content = confirmationAddress ? (
     <>
       <p>
-        We have just sent a confirmation link to <b>{confirmationAddress}</b>. <br /> Click the link and you’ll be signed in.
+        <Trans id="signin.message.emailsent">
+          We have just sent a confirmation link to <b>{confirmationAddress}</b>. <br /> Click the link and you’ll be signed in.
+        </Trans>
       </p>
       <p>
         <Button variant="tertiary" onClick={closeModal}>

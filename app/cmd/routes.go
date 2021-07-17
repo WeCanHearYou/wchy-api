@@ -133,8 +133,12 @@ func routes(r *web.Engine) *web.Engine {
 		ui.Post("/_api/notifications/read-all", handlers.ReadAllNotifications())
 		ui.Get("/_api/notifications/unread/total", handlers.TotalUnreadNotifications())
 
-		//From this step, only Collaborators and Administrators are allowed
+		// From this step, only Collaborators and Administrators are allowed
 		ui.Use(middlewares.IsAuthorized(enum.RoleCollaborator, enum.RoleAdministrator))
+
+		// locale is forced to English for administrative pages.
+		// This is meant to be removed when all pages are translated.
+		ui.Use(middlewares.SetLocale("en"))
 
 		ui.Get("/admin", handlers.GeneralSettingsPage())
 		ui.Get("/admin/advanced", handlers.AdvancedSettingsPage())
@@ -183,6 +187,10 @@ func routes(r *web.Engine) *web.Engine {
 
 		//From this step, only Collaborators and Administrators are allowed
 		api.Use(middlewares.IsAuthorized(enum.RoleCollaborator, enum.RoleAdministrator))
+
+		// locale is forced to English for administrative API.
+		// This is meant to be removed when all API are translated.
+		ui.Use(middlewares.SetLocale("en"))
 
 		api.Get("/api/v1/users", apiv1.ListUsers())
 		api.Get("/api/v1/posts/:number/votes", apiv1.ListVotes())

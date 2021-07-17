@@ -32,16 +32,16 @@ func TestValidMessage(t *testing.T) {
 func TestEnglish_ValidMessage_WithParams(t *testing.T) {
 	RegisterT(t)
 
-	key := "validation.settings.unknown"
+	key := "email.greetings_name"
 
-	translated := i18n.T(emptyContext, key, i18n.Params{"name": "Notification"})
-	Expect(translated).Equals("Unknown settings named 'Notification'")
+	translated := i18n.T(emptyContext, key, i18n.Params{"name": "Jon"})
+	Expect(translated).Equals("Hello, Jon!")
 
-	translated = i18n.T(enContext, key, i18n.Params{"name": "Notification"})
-	Expect(translated).Equals("Unknown settings named 'Notification'")
+	translated = i18n.T(enContext, key, i18n.Params{"name": "Jon"})
+	Expect(translated).Equals("Hello, Jon!")
 
-	translated = i18n.T(ptBRContext, key, i18n.Params{"name": "Notification"})
-	Expect(translated).Equals("Configuração 'Notification' é desconhecida")
+	translated = i18n.T(ptBRContext, key, i18n.Params{"name": "Jon"})
+	Expect(translated).Equals("Olá, Jon!")
 }
 
 func TestEnglish_InvalidMessage(t *testing.T) {

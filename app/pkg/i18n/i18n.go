@@ -17,6 +17,7 @@ import (
 var localeToPlurals = map[string]string{
 	"en":    "en",
 	"pt-BR": "pt",
+	"fr":    "fr",
 }
 
 type Params map[string]interface{}

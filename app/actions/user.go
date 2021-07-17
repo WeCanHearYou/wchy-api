@@ -9,6 +9,7 @@ import (
 	"github.com/getfider/fider/app/models/query"
 	"github.com/getfider/fider/app/pkg/bus"
 	"github.com/getfider/fider/app/pkg/errors"
+	"github.com/getfider/fider/app/pkg/i18n"
 	"github.com/getfider/fider/app/pkg/validate"
 )
 
@@ -38,7 +39,7 @@ func (action *CreateUser) Validate(ctx context.Context, user *entity.User) *vali
 		result.AddFieldFailure("", "Either email or reference is required")
 	} else {
 		if action.Email != "" {
-			messages := validate.Email(action.Email)
+			messages := validate.Email(ctx, action.Email)
 			if len(messages) > 0 {
 				result.AddFieldFailure("email", messages...)
 			}
@@ -114,21 +115,16 @@ func (action *ChangeUserEmail) Validate(ctx context.Context, user *entity.User) 
 	result := validate.Success()
 
 	if action.Email == "" {
-		result.AddFieldFailure("email", "Email is required.")
-		return result
-	}
-
-	if len(action.Email) > 200 {
-		result.AddFieldFailure("email", "Email must have less than 200 characters.")
+		result.AddFieldFailure("email", propertyIsRequired(ctx, "email"))
 		return result
 	}
 
 	if user.Email == action.Email {
-		result.AddFieldFailure("email", "Choose a different email.")
+		result.AddFieldFailure("email", i18n.T(ctx, "validation.custom.differentemail"))
 		return result
 	}
 
-	messages := validate.Email(action.Email)
+	messages := validate.Email(ctx, action.Email)
 	if len(messages) > 0 {
 		result.AddFieldFailure("email", messages...)
 		return result
@@ -140,7 +136,7 @@ func (action *ChangeUserEmail) Validate(ctx context.Context, user *entity.User) 
 		return validate.Error(err)
 	}
 	if err == nil && userByEmail.Result.ID != user.ID {
-		result.AddFieldFailure("email", "This email is already in use by someone else")
+		result.AddFieldFailure("email", i18n.T(ctx, "validation.custom.emailtaken"))
 		return result
 	}
 	action.Requestor = user

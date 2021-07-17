@@ -26,7 +26,7 @@ func TestInvalidEmail(t *testing.T) {
 		"my@company@other.com",
 		rand.String(200) + "@gmail.com",
 	} {
-		messages := validate.Email(email)
+		messages := validate.Email(context.Background(), email)
 		Expect(len(messages) > 0).IsTrue()
 	}
 }
@@ -39,7 +39,7 @@ func TestValidEmail(t *testing.T) {
 		"hello+alias@company.com",
 		"abc@gmail.com",
 	} {
-		messages := validate.Email(email)
+		messages := validate.Email(context.Background(), email)
 		Expect(messages).HasLen(0)
 	}
 }
@@ -54,7 +54,7 @@ func TestInvalidURL(t *testing.T) {
 		rand.String(301),
 		"my@company",
 	} {
-		messages := validate.URL(rawurl)
+		messages := validate.URL(context.Background(), rawurl)
 		Expect(len(messages) > 0).IsTrue()
 	}
 }
@@ -67,7 +67,7 @@ func TestValidURL(t *testing.T) {
 		"https://example.org/oauth",
 		"https://example.org/oauth?test=abc",
 	} {
-		messages := validate.URL(rawurl)
+		messages := validate.URL(context.Background(), rawurl)
 		Expect(messages).HasLen(0)
 	}
 }

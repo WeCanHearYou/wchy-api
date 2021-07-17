@@ -4,6 +4,7 @@ import { actions, navigator, Failure } from "@fider/services"
 import { Form, Modal, Button, TextArea } from "@fider/components"
 import { useFider } from "@fider/hooks"
 import { VStack } from "@fider/components/layout"
+import { t, Trans } from "@lingui/macro"
 
 interface ModerationPanelProps {
   post: Post
@@ -37,9 +38,16 @@ export const ModerationPanel = (props: ModerationPanelProps) => {
     <Modal.Window isOpen={showConfirmation} onClose={hideModal} center={false} size="large">
       <Modal.Content>
         <Form error={error}>
-          <TextArea field="text" onChange={setText} value={text} placeholder="Why are you deleting this post? (optional)">
+          <TextArea
+            field="text"
+            onChange={setText}
+            value={text}
+            placeholder={t({ id: "showpost.moderationpanel.text.placeholder", message: "Why are you deleting this post? (optional)" })}
+          >
             <span className="text-muted">
-              This operation <strong>cannot</strong> be undone.
+              <Trans id="showpost.moderationpanel.text.help">
+                This operation <strong>cannot</strong> be undone.
+              </Trans>
             </span>
           </TextArea>
         </Form>
@@ -47,10 +55,10 @@ export const ModerationPanel = (props: ModerationPanelProps) => {
 
       <Modal.Footer>
         <Button variant="danger" onClick={handleDelete}>
-          Delete
+          <Trans id="action.delete">Delete</Trans>
         </Button>
         <Button variant="tertiary" onClick={hideModal}>
-          Cancel
+          <Trans id="action.cancel">Cancel</Trans>
         </Button>
       </Modal.Footer>
     </Modal.Window>
@@ -59,9 +67,11 @@ export const ModerationPanel = (props: ModerationPanelProps) => {
   return (
     <VStack>
       {modal}
-      <span className="text-category">Moderation</span>
+      <span className="text-category">
+        <Trans id="label.moderation">Moderation</Trans>
+      </span>
       <Button variant="danger" size="small" className="w-full" onClick={showModal}>
-        Delete
+        <Trans id="action.delete">Delete</Trans>
       </Button>
     </VStack>
   )

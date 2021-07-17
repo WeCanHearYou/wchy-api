@@ -9,6 +9,7 @@ import (
 	"github.com/getfider/fider/app/models/enum"
 	"github.com/getfider/fider/app/models/query"
 	"github.com/getfider/fider/app/pkg/bus"
+	"github.com/getfider/fider/app/pkg/i18n"
 	"github.com/gosimple/slug"
 
 	"github.com/getfider/fider/app"
@@ -33,21 +34,21 @@ func (action *CreateNewPost) Validate(ctx context.Context, user *entity.User) *v
 	result := validate.Success()
 
 	if action.Title == "" {
-		result.AddFieldFailure("title", "Title is required.")
+		result.AddFieldFailure("title", propertyIsRequired(ctx, "title"))
 	} else if len(action.Title) < 10 {
-		result.AddFieldFailure("title", "Title needs to be more descriptive.")
+		result.AddFieldFailure("title", i18n.T(ctx, "validation.custom.descriptivetitle"))
 	} else if len(action.Title) > 100 {
-		result.AddFieldFailure("title", "Title must have less than 100 characters.")
+		result.AddFieldFailure("title", propertyMaxStringLen(ctx, "title", 100))
 	} else {
 		err := bus.Dispatch(ctx, &query.GetPostBySlug{Slug: slug.Make(action.Title)})
 		if err != nil && errors.Cause(err) != app.ErrNotFound {
 			return validate.Error(err)
 		} else if err == nil {
-			result.AddFieldFailure("title", "This has already been posted before.")
+			result.AddFieldFailure("title", i18n.T(ctx, "validation.custom.duplicatetitle"))
 		}
 	}
 
-	messages, err := validate.MultiImageUpload(nil, action.Attachments, validate.MultiImageUploadOpts{
+	messages, err := validate.MultiImageUpload(ctx, nil, action.Attachments, validate.MultiImageUploadOpts{
 		MaxUploads:   3,
 		MaxKilobytes: 5120,
 		ExactRatio:   false,
@@ -96,13 +97,11 @@ func (action *UpdatePost) Validate(ctx context.Context, user *entity.User) *vali
 	result := validate.Success()
 
 	if action.Title == "" {
-		result.AddFieldFailure("title", "Title is required.")
+		result.AddFieldFailure("title", propertyIsRequired(ctx, "title"))
 	} else if len(action.Title) < 10 {
-		result.AddFieldFailure("title", "Title needs to be more descriptive.")
-	}
-
-	if len(action.Title) > 100 {
-		result.AddFieldFailure("title", "Title must have less than 100 characters.")
+		result.AddFieldFailure("title", i18n.T(ctx, "validation.custom.descriptivetitle"))
+	} else if len(action.Title) > 100 {
+		result.AddFieldFailure("title", propertyMaxStringLen(ctx, "title", 100))
 	}
 
 	postBySlug := &query.GetPostBySlug{Slug: slug.Make(action.Title)}
@@ -110,7 +109,7 @@ func (action *UpdatePost) Validate(ctx context.Context, user *entity.User) *vali
 	if err != nil && errors.Cause(err) != app.ErrNotFound {
 		return validate.Error(err)
 	} else if err == nil && postBySlug.Result.ID != action.Post.ID {
-		result.AddFieldFailure("title", "This has already been posted before.")
+		result.AddFieldFailure("title", i18n.T(ctx, "validation.custom.duplicatetitle"))
 	}
 
 	if len(action.Attachments) > 0 {
@@ -120,7 +119,7 @@ func (action *UpdatePost) Validate(ctx context.Context, user *entity.User) *vali
 			return validate.Error(err)
 		}
 
-		messages, err := validate.MultiImageUpload(getAttachments.Result, action.Attachments, validate.MultiImageUploadOpts{
+		messages, err := validate.MultiImageUpload(ctx, getAttachments.Result, action.Attachments, validate.MultiImageUploadOpts{
 			MaxUploads:   3,
 			MaxKilobytes: 5120,
 			ExactRatio:   false,
@@ -151,10 +150,10 @@ func (action *AddNewComment) Validate(ctx context.Context, user *entity.User) *v
 	result := validate.Success()
 
 	if action.Content == "" {
-		result.AddFieldFailure("content", "Comment is required.")
+		result.AddFieldFailure("content", propertyIsRequired(ctx, "comment"))
 	}
 
-	messages, err := validate.MultiImageUpload(nil, action.Attachments, validate.MultiImageUploadOpts{
+	messages, err := validate.MultiImageUpload(ctx, nil, action.Attachments, validate.MultiImageUploadOpts{
 		MaxUploads:   2,
 		MaxKilobytes: 5120,
 		ExactRatio:   false,
@@ -187,19 +186,19 @@ func (action *SetResponse) Validate(ctx context.Context, user *entity.User) *val
 	result := validate.Success()
 
 	if action.Status < enum.PostOpen || action.Status > enum.PostDuplicate {
-		result.AddFieldFailure("status", "Status is invalid.")
+		result.AddFieldFailure("status", propertyIsInvalid(ctx, "status"))
 	}
 
 	if action.Status == enum.PostDuplicate {
 		if action.OriginalNumber == action.Number {
-			result.AddFieldFailure("originalNumber", "Cannot be a duplicate of itself")
+			result.AddFieldFailure("originalNumber", i18n.T(ctx, "validation.custom.selfduplicate"))
 		}
 
 		getOriginaPost := &query.GetPostByNumber{Number: action.OriginalNumber}
 		err := bus.Dispatch(ctx, getOriginaPost)
 		if err != nil {
 			if errors.Cause(err) == app.ErrNotFound {
-				result.AddFieldFailure("originalNumber", "Original post not found")
+				result.AddFieldFailure("originalNumber", i18n.T(ctx, "validation.custom.originalpostnotfound"))
 			} else {
 				return validate.Error(err)
 			}
@@ -241,7 +240,7 @@ func (action *DeletePost) Validate(ctx context.Context, user *entity.User) *vali
 	}
 
 	if isReferencedQuery.Result {
-		return validate.Failed("This post cannot be deleted because it's being referenced by a duplicated post.")
+		return validate.Failed(i18n.T(ctx, "validation.custom.cannotdeleteduplicatepost"))
 	}
 
 	return validate.Success()
@@ -276,7 +275,7 @@ func (action *EditComment) Validate(ctx context.Context, user *entity.User) *val
 	result := validate.Success()
 
 	if action.Content == "" {
-		result.AddFieldFailure("content", "Comment is required.")
+		result.AddFieldFailure("content", propertyIsRequired(ctx, "comment"))
 	}
 
 	if len(action.Attachments) > 0 {
@@ -286,7 +285,7 @@ func (action *EditComment) Validate(ctx context.Context, user *entity.User) *val
 			return validate.Error(err)
 		}
 
-		messages, err := validate.MultiImageUpload(getAttachments.Result, action.Attachments, validate.MultiImageUploadOpts{
+		messages, err := validate.MultiImageUpload(ctx, getAttachments.Result, action.Attachments, validate.MultiImageUploadOpts{
 			MaxUploads:   2,
 			MaxKilobytes: 5120,
 			ExactRatio:   false,

@@ -1,6 +1,7 @@
 import React from "react"
 import { Button } from "@fider/components"
 import { actions } from "@fider/services"
+import { Trans } from "@lingui/macro"
 
 interface APIKeyFormState {
   apiKey?: string
@@ -23,9 +24,13 @@ export class APIKeyForm extends React.Component<any, APIKeyFormState> {
     return (
       <>
         <p className="text-muted">
-          Your new API Key is: <code>{this.state.apiKey}</code>
+          <Trans id="mysettings.apikey.newkey">
+            Your new API Key is: <code>{this.state.apiKey}</code>
+          </Trans>
         </p>
-        <p className="text-muted">Stored it securely on your servers and never store it in the client side of your app.</p>
+        <p className="text-muted">
+          <Trans id="mysettings.apikey.newkeynotice">Store it securely on your servers and never store it in the client side of your app.</Trans>
+        </p>
       </>
     )
   }
@@ -33,20 +38,26 @@ export class APIKeyForm extends React.Component<any, APIKeyFormState> {
   public render() {
     return (
       <div>
-        <h4 className="text-title mb-1">API Key</h4>
+        <h4 className="text-title mb-1">
+          <Trans id="mysettings.apikey.title">API Key</Trans>
+        </h4>
         <p className="text-muted">
-          The API Key is only shown whenever generated. If your Key is lost or has been compromised, generated a new one and take note of it.
+          <Trans id="mysettings.apikey.notice">
+            The API Key is only shown whenever generated. If your Key is lost or has been compromised, generated a new one and take note of it.
+          </Trans>
         </p>
         <p className="text-muted">
-          To learn how to use the API, read the{" "}
-          <a className="text-link" rel="noopener" href="https://getfider.com/docs/api" target="_blank">
-            official documentation
-          </a>
-          .
+          <Trans id="mysettings.apikey.documentation">
+            To learn how to use the API, read the{" "}
+            <a className="text-link" rel="noopener" href="https://getfider.com/docs/api" target="_blank">
+              official documentation
+            </a>
+            .
+          </Trans>
         </p>
         <p>
           <Button size="small" onClick={this.regenerate}>
-            Regenerate API Key
+            <Trans id="mysettings.apikey.generate">Regenerate API Key</Trans>
           </Button>
         </p>
         {this.state.apiKey && this.showAPIKey()}

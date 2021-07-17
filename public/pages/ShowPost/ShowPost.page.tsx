@@ -30,6 +30,7 @@ import IconX from "@fider/assets/images/heroicons-x.svg"
 import IconPencilAlt from "@fider/assets/images/heroicons-pencil-alt.svg"
 import IconCheck from "@fider/assets/images/heroicons-check.svg"
 import { HStack, VStack } from "@fider/components/layout"
+import { Trans } from "@lingui/macro"
 
 interface ShowPostPageProps {
   post: Post
@@ -119,12 +120,16 @@ export default class ShowPostPage extends React.Component<ShowPostPageProps, Sho
                   )}
 
                   <span className="text-muted">
-                    Posted by <UserName user={this.props.post.user} /> &middot; <Moment locale={Fider.currentLocale} date={this.props.post.createdAt} />
+                    <Trans id="showpost.label.author">
+                      Posted by <UserName user={this.props.post.user} /> &middot; <Moment locale={Fider.currentLocale} date={this.props.post.createdAt} />
+                    </Trans>
                   </span>
                 </div>
               </HStack>
               <VStack>
-                <span className="text-category">Description</span>
+                <span className="text-category">
+                  <Trans id="label.description">Description</Trans>
+                </span>
                 {this.state.editMode ? (
                   <Form error={this.state.error}>
                     <TextArea field="description" value={this.state.newDescription} onChange={this.setNewDescription} />
@@ -133,7 +138,11 @@ export default class ShowPostPage extends React.Component<ShowPostPageProps, Sho
                 ) : (
                   <>
                     {this.props.post.description && <Markdown className="description" text={this.props.post.description} style="full" />}
-                    {!this.props.post.description && <em className="text-muted">No description provided.</em>}
+                    {!this.props.post.description && (
+                      <em className="text-muted">
+                        <Trans id="showpost.message.nodescription">No description provided.</Trans>
+                      </em>
+                    )}
                     {this.props.attachments.map((x) => (
                       <ImageViewer key={x} bkey={x} />
                     ))}
@@ -150,21 +159,30 @@ export default class ShowPostPage extends React.Component<ShowPostPageProps, Sho
             {Fider.session.isAuthenticated && canEditPost(Fider.session.user, this.props.post) && (
               <VStack>
                 <span key={0} className="text-category">
-                  Actions
+                  <Trans id="label.actions">Actions</Trans>
                 </span>
                 {this.state.editMode ? (
                   <VStack>
                     <Button variant="primary" onClick={this.saveChanges}>
-                      <Icon sprite={IconCheck} /> <span>Save</span>
+                      <Icon sprite={IconCheck} />{" "}
+                      <span>
+                        <Trans id="action.save">Save</Trans>
+                      </span>
                     </Button>
                     <Button onClick={this.cancelEdit}>
-                      <Icon sprite={IconX} /> <span>Cancel</span>
+                      <Icon sprite={IconX} />
+                      <span>
+                        <Trans id="action.cancel">Cancel</Trans>
+                      </span>
                     </Button>
                   </VStack>
                 ) : (
                   <VStack>
                     <Button onClick={this.startEdit}>
-                      <Icon sprite={IconPencilAlt} /> <span>Edit</span>
+                      <Icon sprite={IconPencilAlt} />
+                      <span>
+                        <Trans id="action.edit">Edit</Trans>
+                      </span>
                     </Button>
                     {Fider.session.user.isCollaborator && <ResponseForm post={this.props.post} />}
                   </VStack>

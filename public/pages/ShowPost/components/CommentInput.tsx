@@ -7,6 +7,7 @@ import { SignInModal } from "@fider/components"
 import { cache, actions, Failure, Fider } from "@fider/services"
 import { useFider } from "@fider/hooks"
 import { HStack } from "@fider/components/layout"
+import { t, Trans } from "@lingui/macro"
 
 interface CommentInputProps {
   post: Post
@@ -64,7 +65,7 @@ export const CommentInput = (props: CommentInputProps) => {
               </div>
             )}
             <TextArea
-              placeholder="Leave a comment"
+              placeholder={t({ id: "showpost.commentinput.placeholder", message: "Leave a comment" })}
               field="content"
               value={content}
               minRows={1}
@@ -76,7 +77,7 @@ export const CommentInput = (props: CommentInputProps) => {
               <>
                 <MultiImageUploader field="attachments" maxUploads={2} onChange={setAttachments} />
                 <Button variant="primary" onClick={submit}>
-                  Submit
+                  <Trans id="action.submit">Submit</Trans>
                 </Button>
               </>
             )}

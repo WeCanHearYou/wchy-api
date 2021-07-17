@@ -127,7 +127,7 @@ func TestRenderer_Home_SSR(t *testing.T) {
 	renderer.Render(buf, http.StatusOK, "index.html", web.Props{
 		Title:       "My Page Title",
 		Description: "My Page Description",
-		ChunkName: 	 "Test.page",
+		ChunkName:   "Test.page",
 		Data: web.Map{
 			"posts":          make([]web.Map, 0),
 			"tags":           make([]web.Map, 0),

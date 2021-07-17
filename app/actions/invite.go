@@ -58,7 +58,7 @@ func (action *InviteUsers) Validate(ctx context.Context, user *entity.User) *val
 
 		for _, email := range action.Recipients {
 			if email != "" {
-				messages := validate.Email(email)
+				messages := validate.Email(ctx, email)
 				result.AddFieldFailure("recipients", messages...)
 			}
 		}

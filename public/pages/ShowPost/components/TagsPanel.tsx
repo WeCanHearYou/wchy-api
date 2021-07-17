@@ -8,6 +8,7 @@ import { useFider } from "@fider/hooks"
 import IconPencilAlt from "@fider/assets/images/heroicons-pencil-alt.svg"
 import IconCheckCircle from "@fider/assets/images/heroicons-check-circle.svg"
 import { HStack, VStack } from "@fider/components/layout"
+import { Trans } from "@lingui/macro"
 
 interface TagsPanelProps {
   post: Post
@@ -59,7 +60,9 @@ export const TagsPanel = (props: TagsPanelProps) => {
         ))}
       </VStack>
     ) : (
-      <span className="text-muted">None</span>
+      <span className="text-muted">
+        <Trans id="label.none">None</Trans>
+      </span>
     )
 
   const editTagsList = props.tags.length > 0 && (
@@ -75,7 +78,10 @@ export const TagsPanel = (props: TagsPanelProps) => {
   return (
     <VStack>
       <HStack spacing={2} className="text-category clickable" onClick={onSubtitleClick}>
-        <span>Tags</span> {icon}
+        <span>
+          <Trans id="label.tags">Tags</Trans>
+        </span>
+        {icon}
       </HStack>
 
       {!isEditing && tagsList}

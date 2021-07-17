@@ -276,7 +276,7 @@ func NotifyAboutStatusChange(post *entity.Post, prevStatus enum.PostStatus) work
 			"postLink":    linkWithText(fmt.Sprintf("#%d", post.Number), web.BaseURL(c), "/posts/%d/%s", post.Number, post.Slug),
 			"siteName":    c.Tenant().Name,
 			"content":     markdown.Full(post.Response.Text),
-			"status":      i18n.T(c, fmt.Sprintf("post_status.%s", post.Status.Name())),
+			"status":      i18n.T(c, fmt.Sprintf("enum.poststatus.%s", post.Status.Name())),
 			"duplicate":   duplicate,
 			"view":        linkWithText(i18n.T(c, "email.subscription.view"), web.BaseURL(c), "/posts/%d/%s", post.Number, post.Slug),
 			"unsubscribe": linkWithText(i18n.T(c, "email.subscription.unsubscribe"), web.BaseURL(c), "/posts/%d/%s", post.Number, post.Slug),

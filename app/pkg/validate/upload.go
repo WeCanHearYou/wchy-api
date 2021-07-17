@@ -1,9 +1,10 @@
 package validate
 
 import (
-	"fmt"
+	"context"
 
 	"github.com/getfider/fider/app/models/dto"
+	"github.com/getfider/fider/app/pkg/i18n"
 	"github.com/goenning/imagic"
 )
 
@@ -30,7 +31,7 @@ type ImageUploadOpts struct {
 }
 
 //MultiImageUpload validates multiple image uploads
-func MultiImageUpload(currentAttachments []string, uploads []*dto.ImageUpload, opts MultiImageUploadOpts) ([]string, error) {
+func MultiImageUpload(ctx context.Context, currentAttachments []string, uploads []*dto.ImageUpload, opts MultiImageUploadOpts) ([]string, error) {
 	if currentAttachments == nil {
 		currentAttachments = []string{}
 	}
@@ -48,7 +49,7 @@ func MultiImageUpload(currentAttachments []string, uploads []*dto.ImageUpload, o
 			totalCount++
 		}
 
-		messages, err := ImageUpload(upload, ImageUploadOpts{
+		messages, err := ImageUpload(ctx, upload, ImageUploadOpts{
 			IsRequired:   opts.IsRequired,
 			MinWidth:     opts.MinWidth,
 			MinHeight:    opts.MinHeight,
@@ -64,19 +65,21 @@ func MultiImageUpload(currentAttachments []string, uploads []*dto.ImageUpload, o
 	}
 
 	if totalCount > opts.MaxUploads {
-		return []string{fmt.Sprintf("A maximum of %d attachments are allowed per post.", opts.MaxUploads)}, nil
+		return []string{i18n.T(ctx, "validation.custom.maxattachments", i18n.Params{"number": opts.MaxUploads})}, nil
 	}
 
 	return []string{}, nil
 }
 
 //ImageUpload validates given image upload
-func ImageUpload(upload *dto.ImageUpload, opts ImageUploadOpts) ([]string, error) {
+func ImageUpload(ctx context.Context, upload *dto.ImageUpload, opts ImageUploadOpts) ([]string, error) {
 	messages := []string{}
 
 	if opts.IsRequired {
 		if upload == nil || (upload.BlobKey == "" && upload.Upload == nil) || upload.Remove {
-			messages = append(messages, "An image is required.")
+			messages = append(messages, i18n.T(ctx, "validation.required",
+				i18n.Params{"name": i18n.T(ctx, "property.image")},
+			))
 		}
 	}
 
@@ -84,22 +87,27 @@ func ImageUpload(upload *dto.ImageUpload, opts ImageUploadOpts) ([]string, error
 		logo, err := imagic.Parse(upload.Upload.Content)
 		if err != nil {
 			if err == imagic.ErrNotSupported {
-				messages = append(messages, "This file format not supported.")
+				messages = append(messages, i18n.T(ctx, "validation.custom.unsupportedfileformat"))
 			} else {
 				return nil, err
 			}
 		} else {
 
 			if logo.Width < opts.MinWidth || logo.Height < opts.MinHeight {
-				messages = append(messages, fmt.Sprintf("The image must have minimum dimensions of %dx%d pixels.", opts.MinWidth, opts.MinHeight))
+				messages = append(messages, i18n.T(ctx, "validation.custom.minimagedimensions",
+					i18n.Params{"width": opts.MinWidth},
+					i18n.Params{"height": opts.MinHeight},
+				))
 			}
 
 			if opts.ExactRatio && logo.Width != logo.Height {
-				messages = append(messages, "The image must have an aspect ratio of 1:1.")
+				messages = append(messages, i18n.T(ctx, "validation.custom.imagesquareratio"))
 			}
 
 			if logo.Size > (opts.MaxKilobytes * 1024) {
-				messages = append(messages, fmt.Sprintf("The image size must be smaller than %dKB.", opts.MaxKilobytes))
+				messages = append(messages, i18n.T(ctx, "validation.custom.maximagesize",
+					i18n.Params{"kilobytes": opts.MaxKilobytes},
+				))
 			}
 
 			if logo.Height > MaxDimensionSize && logo.Width > MaxDimensionSize {

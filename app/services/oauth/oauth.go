@@ -131,7 +131,7 @@ func parseOAuthRawProfile(ctx context.Context, c *cmd.ParseOAuthRawProfile) erro
 		profile.Name = "Anonymous"
 	}
 
-	if len(validate.Email(profile.Email)) != 0 {
+	if len(validate.Email(ctx, profile.Email)) != 0 {
 		profile.Email = ""
 	}
 

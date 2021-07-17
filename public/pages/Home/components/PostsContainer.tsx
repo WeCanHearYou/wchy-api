@@ -10,6 +10,7 @@ import IconX from "@fider/assets/images/heroicons-x.svg"
 import { PostFilter } from "./PostFilter"
 import { ListPosts } from "./ListPosts"
 import { TagsFilter } from "./TagsFilter"
+import { t, Trans } from "@lingui/macro"
 
 interface PostsContainerProps {
   user?: CurrentUser
@@ -106,7 +107,7 @@ export class PostsContainer extends React.Component<PostsContainerProps, PostsCo
           {!this.state.query && (
             <div className="c-posts-container__filter-col">
               <PostFilter activeView={this.state.view} viewChanged={this.handleViewChanged} countPerStatus={this.props.countPerStatus} />
-              <TagsFilter tags={this.props.tags} selectionChanged={this.handleTagsFilterChanged} selected={this.state.tags} />
+              {this.props.tags.length > 0 && <TagsFilter tags={this.props.tags} selectionChanged={this.handleTagsFilterChanged} selected={this.state.tags} />}
             </div>
           )}
           <div className="c-posts-container__search-col">
@@ -114,18 +115,22 @@ export class PostsContainer extends React.Component<PostsContainerProps, PostsCo
               field="query"
               icon={this.state.query ? IconX : IconSearch}
               onIconClick={this.state.query ? this.clearSearch : undefined}
-              placeholder="Search"
+              placeholder={t({ id: "home.postscontainer.query.placeholder", message: "Search" })}
               value={this.state.query}
               onChange={this.handleSearchFilterChanged}
             />
           </div>
         </div>
-        <ListPosts posts={this.state.posts} tags={this.props.tags} emptyText={"No results matched your search, try something different."} />
+        <ListPosts
+          posts={this.state.posts}
+          tags={this.props.tags}
+          emptyText={t({ id: "home.postscontainer.label.noresults", message: "No results matched your search, try something different." })}
+        />
         {this.state.loading && <Loader />}
         {showMoreLink && (
           <div className="my-4 ml-4">
             <a href={showMoreLink} className="text-primary-base text-medium hover:underline" onClick={this.showMore}>
-              View more posts
+              <Trans id="home.postscontainer.label.viewmore">View more posts</Trans>
             </a>
           </div>
         )}

@@ -4,6 +4,7 @@ import HomePage, { HomePageProps } from "../Home/Home.page"
 import SignInPage from "../SignIn/SignIn.page"
 import { Modal, Button, Form, Input, LegalFooter } from "@fider/components"
 import { actions, Failure, querystring, Fider } from "@fider/services"
+import { t, Trans } from "@lingui/macro"
 
 interface CompleteSignInProfilePageState {
   name: string
@@ -42,18 +43,22 @@ export default class CompleteSignInProfilePage extends React.Component<HomePageP
     return (
       <>
         <Modal.Window canClose={false} isOpen={true} onClose={this.noop}>
-          <Modal.Header>Complete your profile</Modal.Header>
+          <Modal.Header>
+            <Trans id="modal.completeprofile.header">Complete your profile</Trans>
+          </Modal.Header>
           <Modal.Content>
-            <p>Because this is your first sign in, please enter your name.</p>
+            <p>
+              <Trans id="modal.completeprofile.text">Because this is your first sign in, please enter your name.</Trans>
+            </p>
             <Form error={this.state.error}>
               <Input
                 field="name"
                 onChange={this.setName}
                 maxLength={100}
-                placeholder="Name"
+                placeholder={t({ id: "modal.completeprofile.name.placeholder", message: "Name" })}
                 suffix={
                   <Button type="submit" onClick={this.submit} variant="primary" disabled={this.state.name === ""}>
-                    Submit
+                    <Trans id="action.submit">Submit</Trans>
                   </Button>
                 }
               />

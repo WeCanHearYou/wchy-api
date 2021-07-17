@@ -2,13 +2,13 @@ package validate
 
 import (
 	"context"
-	"fmt"
 	"net/url"
 	"regexp"
 	"strings"
 
 	"github.com/getfider/fider/app/models/query"
 	"github.com/getfider/fider/app/pkg/bus"
+	"github.com/getfider/fider/app/pkg/i18n"
 
 	"github.com/getfider/fider/app/pkg/env"
 )
@@ -17,29 +17,39 @@ var emailRegex = regexp.MustCompile("^(((([a-zA-Z]|\\d|[!#\\$%&'\\*\\+\\-\\/=\\?
 var hostnameRegex = regexp.MustCompile(`^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$`)
 
 //Email validates given email address
-func Email(email string) []string {
+func Email(ctx context.Context, email string) []string {
 	email = strings.ToLower(email)
 
 	if len(email) > 200 {
-		return []string{"Email address must have less than 200 characters."}
+		return []string{i18n.T(ctx, "validation.maxstringlen",
+			i18n.Params{"name": i18n.T(ctx, "property.email")},
+			i18n.Params{"len": 200},
+		)}
 	}
 
 	if !emailRegex.MatchString(email) {
-		return []string{fmt.Sprintf("'%s' is not a valid email address.", email)}
+		return []string{i18n.T(ctx, "validation.custom.invalidemail",
+			i18n.Params{"email": email},
+		)}
 	}
 
 	return []string{}
 }
 
 //URL validates given URL
-func URL(rawurl string) []string {
+func URL(ctx context.Context, rawurl string) []string {
 	if len(rawurl) > 300 {
-		return []string{"URL address must have less than 300 characters."}
+		return []string{i18n.T(ctx, "validation.maxstringlen",
+			i18n.Params{"name": "URL"},
+			i18n.Params{"len": 300},
+		)}
 	}
 
 	_, err := url.ParseRequestURI(rawurl)
 	if err != nil {
-		return []string{fmt.Sprintf("'%s' is not a valid URL address.", rawurl)}
+		return []string{i18n.T(ctx, "validation.custom.invalidurl",
+			i18n.Params{"url": rawurl},
+		)}
 	}
 
 	return []string{}
@@ -52,22 +62,29 @@ func CNAME(ctx context.Context, cname string) []string {
 	if !env.IsSingleHostMode() {
 		domain := env.MultiTenantDomain()
 		if strings.HasSuffix(cname, domain) || cname == domain[1:] {
-			return []string{fmt.Sprintf("'%s' is not a valid custom domain.", cname)}
+			return []string{i18n.T(ctx, "validation.custom.invalidcustomdomain",
+				i18n.Params{"domain": cname},
+			)}
 		}
 	}
 
 	if len(cname) > 100 {
-		return []string{"Custom domain name must have less than 100 characters."}
+		return []string{i18n.T(ctx, "validation.maxstringlen",
+			i18n.Params{"name": i18n.T(ctx, "property.customdomain")},
+			i18n.Params{"len": 100},
+		)}
 	}
 
 	if !hostnameRegex.MatchString(cname) || !strings.Contains(cname, ".") {
-		return []string{fmt.Sprintf("'%s' is not a valid custom domain.", cname)}
+		return []string{i18n.T(ctx, "validation.custom.invalidcustomdomain",
+			i18n.Params{"domain": cname},
+		)}
 	}
 
 	isAvailable := &query.IsCNAMEAvailable{CNAME: cname}
 	bus.MustDispatch(ctx, isAvailable)
 	if !isAvailable.Result {
-		return []string{"This custom domain is already in use by someone else."}
+		return []string{i18n.T(ctx, "validation.custom.customdomaintaken")}
 	}
 
 	return []string{}

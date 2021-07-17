@@ -5,6 +5,7 @@ import { HStack } from "@fider/components/layout"
 import { formatDate, Failure, actions } from "@fider/services"
 import { useFider } from "@fider/hooks"
 import IconDotsHorizontal from "@fider/assets/images/heroicons-dots-horizontal.svg"
+import { Trans } from "@lingui/macro"
 
 interface ShowCommentProps {
   post: Post
@@ -67,19 +68,23 @@ export const ShowComment = (props: ShowCommentProps) => {
   const modal = () => {
     return (
       <Modal.Window isOpen={isDeleteConfirmationModalOpen} onClose={closeModal} center={false} size="small">
-        <Modal.Header>Delete Comment</Modal.Header>
+        <Modal.Header>
+          <Trans id="modal.deletecomment.header">Delete Comment</Trans>
+        </Modal.Header>
         <Modal.Content>
           <p>
-            This process is irreversible. <strong>Are you sure?</strong>
+            <Trans id="modal.deletecomment.text">
+              This process is irreversible. <strong>Are you sure?</strong>
+            </Trans>
           </p>
         </Modal.Content>
 
         <Modal.Footer>
           <Button variant="danger" onClick={deleteComment}>
-            Delete
+            <Trans id="action.delete">Delete</Trans>
           </Button>
           <Button variant="tertiary" onClick={closeModal}>
-            Cancel
+            <Trans id="action.cancel">Cancel</Trans>
           </Button>
         </Modal.Footer>
       </Modal.Window>
@@ -109,9 +114,11 @@ export const ShowComment = (props: ShowCommentProps) => {
             </HStack>
             {!isEditing && canEditComment() && (
               <Dropdown position="left" renderHandle={<Icon sprite={IconDotsHorizontal} width="16" height="16" />}>
-                <Dropdown.ListItem onClick={onActionSelected("edit")}>Edit</Dropdown.ListItem>
+                <Dropdown.ListItem onClick={onActionSelected("edit")}>
+                  <Trans id="action.edit">Edit</Trans>
+                </Dropdown.ListItem>
                 <Dropdown.ListItem onClick={onActionSelected("delete")} className="text-red-700">
-                  Delete
+                  <Trans id="action.delete">Delete</Trans>
                 </Dropdown.ListItem>
               </Dropdown>
             )}
@@ -123,10 +130,10 @@ export const ShowComment = (props: ShowCommentProps) => {
               <TextArea field="content" minRows={1} value={newContent} placeholder={comment.content} onChange={setNewContent} />
               <MultiImageUploader field="attachments" bkeys={comment.attachments} maxUploads={2} onChange={setAttachments} />
               <Button size="small" onClick={saveEdit} variant="primary">
-                Save
+                <Trans id="action.save">Save</Trans>
               </Button>
               <Button variant="tertiary" size="small" onClick={cancelEdit}>
-                Cancel
+                <Trans id="action.cancel">Cancel</Trans>
               </Button>
             </Form>
           ) : (

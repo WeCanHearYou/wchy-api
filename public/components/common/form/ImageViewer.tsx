@@ -3,6 +3,7 @@ import { uploadedImageURL } from "@fider/services"
 import { Modal, Button, Loader } from "@fider/components"
 
 import "./ImageViewer.scss"
+import { Trans } from "@lingui/macro"
 
 interface ImageViewerProps {
   bkey: string
@@ -53,7 +54,7 @@ export class ImageViewer extends React.Component<ImageViewerProps, ImageViewerSt
 
         <Modal.Footer>
           <Button variant="tertiary" onClick={this.closeModal}>
-            Close
+            <Trans id="action.close">Close</Trans>
           </Button>
         </Modal.Footer>
       </Modal.Window>

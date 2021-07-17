@@ -53,7 +53,7 @@ func (action *CreateTenant) Validate(ctx context.Context, user *entity.User) *va
 		if action.Email == "" {
 			result.AddFieldFailure("email", "Email is required.")
 		} else {
-			messages := validate.Email(action.Email)
+			messages := validate.Email(ctx, action.Email)
 			result.AddFieldFailure("email", messages...)
 		}
 
@@ -113,7 +113,7 @@ type UpdateTenantSettings struct {
 	Title          string           `json:"title"`
 	Invitation     string           `json:"invitation"`
 	WelcomeMessage string           `json:"welcomeMessage"`
-	Locale 				 string           `json:"locale"`
+	Locale         string           `json:"locale"`
 	CNAME          string           `json:"cname" format:"lower"`
 }
 
@@ -137,7 +137,7 @@ func (action *UpdateTenantSettings) Validate(ctx context.Context, user *entity.U
 		action.Logo.BlobKey = tenant.LogoBlobKey
 	}
 
-	messages, err := validate.ImageUpload(action.Logo, validate.ImageUploadOpts{
+	messages, err := validate.ImageUpload(ctx, action.Logo, validate.ImageUploadOpts{
 		IsRequired:   false,
 		MinHeight:    200,
 		MinWidth:     200,

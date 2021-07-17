@@ -2,6 +2,7 @@ import React, { useState } from "react"
 import { SignInModal, TenantLogo, DevBanner, NotificationIndicator, UserMenu } from "@fider/components"
 import { useFider } from "@fider/hooks"
 import { HStack } from "./layout"
+import { Trans } from "@lingui/macro"
 
 export const Header = () => {
   const fider = useFider()
@@ -34,7 +35,7 @@ export const Header = () => {
               )}
               {!fider.session.isAuthenticated && (
                 <a href="#" className="uppercase text-sm" onClick={showModal}>
-                  Sign in
+                  <Trans id="action.signin">Sign in</Trans>
                 </a>
               )}
             </HStack>

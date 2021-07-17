@@ -3,6 +3,7 @@ import { PostStatus } from "@fider/models"
 import { Dropdown } from "@fider/components"
 import { HStack } from "@fider/components/layout"
 import { useFider } from "@fider/hooks"
+import { t, Trans } from "@lingui/macro"
 
 interface PostFilterProps {
   activeView: string
@@ -26,19 +27,20 @@ export const PostFilter = (props: PostFilterProps) => {
   }
 
   const options: OptionItem[] = [
-    { value: "trending", label: "Trending" },
-    { value: "recent", label: "Recent" },
-    { value: "most-wanted", label: "Most Wanted" },
-    { value: "most-discussed", label: "Most Discussed" },
+    { value: "trending", label: t({ id: "home.postfilter.option.trending", message: "Trending" }) },
+    { value: "recent", label: t({ id: "home.postfilter.option.recent", message: "Recent" }) },
+    { value: "most-wanted", label: t({ id: "home.postfilter.option.mostwanted", message: "Most Wanted" }) },
+    { value: "most-discussed", label: t({ id: "home.postfilter.option.mostdiscussed", message: "Most Discussed" }) },
   ]
 
   if (fider.session.isAuthenticated) {
-    options.push({ value: "my-votes", label: "My Votes" })
+    options.push({ value: "my-votes", label: t({ id: "home.postfilter.option.myvotes", message: "My Votes" }) })
   }
 
   PostStatus.All.filter((s) => s.filterable && props.countPerStatus[s.value]).forEach((s) => {
+    const id = `enum.poststatus.${s.value.toString()}`
     options.push({
-      label: s.title,
+      label: t({ id, message: s.title }),
       value: s.value,
       count: props.countPerStatus[s.value],
     })
@@ -49,7 +51,9 @@ export const PostFilter = (props: PostFilterProps) => {
 
   return (
     <HStack>
-      <span className="text-category">View</span>
+      <span className="text-category">
+        <Trans id="home.postfilter.label.view">View</Trans>
+      </span>
       <Dropdown renderHandle={<div className="text-medium text-xs uppercase rounded-md uppercase bg-gray-100 px-2 py-1">{label}</div>}>
         {options.map((o) => (
           <Dropdown.ListItem onClick={handleChangeView(o)} key={o.value}>

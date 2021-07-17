@@ -78,6 +78,7 @@
     "format": "minimal",
     "locales": [
       "pt-BR",
+      "fr",
       "en"
     ]
   },
